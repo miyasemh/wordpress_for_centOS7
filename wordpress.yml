@@ -1,0 +1,25 @@
+- name: Download WordPress
+  unarchive:
+    src: https://wordpress.org/latest.tar.gz
+    dest: /var/www/html/
+    remote_src: True
+    
+- name: Change apache root directory
+  replace:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: '"/var/www/html"'
+    replace: '"/var/www/html/wordpress"'
+    backup: yes
+    
+- name: Fix file ownership
+  file:
+    path: /var/www/html
+    owner: apache
+    group: apache
+    state: directory
+    recurse: yes
+    
+- name: Restart httpd
+  service:
+    name: httpd
+    state: restarted
