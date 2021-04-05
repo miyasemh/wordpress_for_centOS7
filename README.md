@@ -1,0 +1,1 @@
+# wordpress_for_centOS7
