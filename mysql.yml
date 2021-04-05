@@ -1,0 +1,28 @@
+- name: Install MySQL
+  package:
+    name: mariadb-server
+    state: latest
+    
+- name: Install MySQL Client
+  package:
+    name: mariadb
+    state: latest
+    
+- name: Start MySQL
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+    
+- name: Check if WordPress Database exists
+  shell: 'mysql -e "SHOW DATABASES;" | grep wordpress'
+  register: db_status
+  ignore_errors: True
+  
+- name: Create a new database for WordPress
+  shell: 'mysql -e "CREATE DATABASE wordpress;"'
+  when: db_status.stdout != 'wordpress'
+  
+- name: Create a new user for WordPress
+  shell: "mysql -e \"GRANT ALL ON wordpress.* TO 'wpuser'@'%' IDENTIFIED BY 'MyP@SS'\";"
+  when: db_status.stdout != 'wordpress'
